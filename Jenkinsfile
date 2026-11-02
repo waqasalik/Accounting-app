@@ -30,20 +30,23 @@ pipeline {
                 sh "mvn test"
             }
         }
-stage("SonarQube Analysis") {
-    steps {
-        script {
-            withSonarQubeEnv(credentialsId: 'Jenkins-SonarQube-token') {
-                sh "mvn org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=accounting-app -Dsonar.projectName='Mini Accounting App'"
+
+        stage("SonarQube Analysis") {
+            steps {
+                script {
+                    withSonarQubeEnv(credentialsId: 'Jenkins-SonarQube-token') {
+                        sh "mvn org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=accounting-app -Dsonar.projectName='Mini Accounting App'"
+                    }
+                }
             }
         }
-    }
-}
-       stage('Quality Gate') {
-       steps {
-           timeout(time: 5, unit: 'MINUTES') {
-               waitForQualityGate abortPipeline: true
-           }
-       }
+
+        stage("Quality Gate") {
+            steps {
+                timeout(time: 5, unit: 'MINUTES') {
+                    waitForQualityGate abortPipeline: true
+                }
+            }
+        }
     }
 }
