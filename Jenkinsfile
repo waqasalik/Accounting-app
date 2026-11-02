@@ -61,8 +61,12 @@ pipeline {
         stage("Build & Push Docker Image") {
             steps {
                 script {
+                    // Force lowercase to prevent Docker build errors
+                    def imageName = "${DOCKER_USER}/${APP_NAME}".toLowerCase()
+                    def fullImage = "${imageName}:${IMAGE_TAG}"
+                    
                     docker.withRegistry('', DOCKER_CRED_ID) {
-                        def dockerImage = docker.build("${IMAGE_NAME}")
+                        def dockerImage = docker.build(fullImage)
                         dockerImage.push("${IMAGE_TAG}")
                         dockerImage.push("latest")
                     }
@@ -70,10 +74,22 @@ pipeline {
             }
         }
 
+        stage("Trivy Scan") {
+            steps {
+                script {
+                    def imageName = "${DOCKER_USER}/${APP_NAME}".toLowerCase()
+                    sh "docker run -v /var/run/docker.sock:/var/run/docker.sock aquasec/trivy image ${imageName}:latest --no-progress --scanners vuln,secret,misconfig"
+                }
+            }
+        }
+
         stage("Cleanup Artifacts") {
             steps {
-                sh "docker rmi ${IMAGE_NAME}:${IMAGE_TAG} || true"
-                sh "docker rmi ${IMAGE_NAME}:latest || true"
+                script {
+                    def imageName = "${DOCKER_USER}/${APP_NAME}".toLowerCase()
+                    sh "docker rmi ${imageName}:${IMAGE_TAG} || true"
+                    sh "docker rmi ${imageName}:latest || true"
+                }
             }
         }
     }
