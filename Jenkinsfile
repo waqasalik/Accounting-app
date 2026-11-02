@@ -37,8 +37,8 @@ stage("SonarQube Analysis") {
                 sh "mvn org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=accounting-app -Dsonar.projectName='Mini Accounting App'"
             }
         }
-
-
+    }
+}
         stage("Quality Gate") {
             steps {
                 script {
