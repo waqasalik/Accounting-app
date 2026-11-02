@@ -30,16 +30,14 @@ pipeline {
                 sh "mvn test"
             }
         }
-
-        stage("SonarQube Analysis") {
-            steps {
-                script {
-                    withSonarQubeEnv(credentialsId: 'Jenkins-SonarQube-token') {
-                        sh "mvn sonar:sonar"
-                    }
-                }
+stage("SonarQube Analysis") {
+    steps {
+        script {
+            withSonarQubeEnv(credentialsId: 'jenkins-sonarqube-token') {
+                sh "mvn org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=accounting-app -Dsonar.projectName='Mini Accounting App'"
             }
         }
+
 
         stage("Quality Gate") {
             steps {
