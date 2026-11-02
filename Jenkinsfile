@@ -2,72 +2,51 @@ pipeline {
     agent { label 'Jenkins-Agent' }
 
     tools {
+        jdk 'Java21'
         maven 'Maven3'
     }
 
-    options {
-        timeout(time: 20, unit: 'MINUTES')
-        buildDiscarder(logRotator(numToKeepStr: '10'))
-        disableConcurrentBuilds()
-    }
-
-    parameters {
-        booleanParam(name: 'BUILD_DOCKER', defaultValue: false,
-                     description: 'Also build the Docker image (needs Docker on the agent)')
-    }
-
     stages {
-        stage('Cleanup Workspace') {
-            steps { cleanWs() }
-        }
-
-        stage('Checkout from SCM') {
-            steps { checkout scm }
-        }
-
-        stage('Check Tools') {
+        stage("Cleanup Workspace") {
             steps {
-                sh '''
-                    java -version
-                    javac -version || { echo "ERROR: agent has a JRE only. Run: sudo apt install -y openjdk-21-jdk"; exit 1; }
-                    mvn -version
-                '''
+                cleanWs()
             }
         }
 
-        stage('Build Application') {
+        stage("Checkout from SCM") {
             steps {
-                sh 'mvn -B clean package -DskipTests'
+                git branch: 'main', credentialsId: 'github', url: 'https://github.com/Ashfaque-9x/register-app'
             }
         }
 
-        stage('Test Application') {
+        stage("Build Application") {
             steps {
-                sh 'mvn -B test'
+                sh "mvn clean package"
             }
-            post {
-                always {
-                    junit allowEmptyResults: true, testResults: 'target/surefire-reports/*.xml'
+        }
+
+        stage("Test Application") {
+            steps {
+                sh "mvn test"
+            }
+        }
+
+        stage("SonarQube Analysis") {
+            steps {
+                script {
+                    withSonarQubeEnv(credentialsId: 'Jenkins-SonarQube-token') {
+                        sh "mvn sonar:sonar"
+                    }
                 }
             }
         }
 
-        stage('Archive Artifact') {
+        stage("Quality Gate") {
             steps {
-                archiveArtifacts artifacts: 'target/accounting-app.jar', fingerprint: true
+                script {
+                    waitForQualityGate abortPipeline: false, credentialsId: 'jenkins-sonarqube-token'
+                }
             }
         }
-
-        stage('Build Docker Image') {
-            when { expression { params.BUILD_DOCKER } }
-            steps {
-                sh 'docker build -t accounting-app:$BUILD_NUMBER .'
-            }
-        }
-    }
-
-    post {
-        success { echo 'Pipeline passed.' }
-        failure { echo 'Pipeline failed. Check the first red stage in the log.' }
     }
 }
