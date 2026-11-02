@@ -7,7 +7,7 @@ pipeline {
     }
 
     environment {
-        APP_NAME        = "Accounting-app"
+        APP_NAME        = "accounting-app"
         RELEASE         = "1.0.0"
         DOCKER_USER     = "waqaszai"
         DOCKER_CRED_ID  = "dockerhub"
