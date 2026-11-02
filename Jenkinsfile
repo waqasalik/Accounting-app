@@ -33,7 +33,7 @@ pipeline {
 stage("SonarQube Analysis") {
     steps {
         script {
-            withSonarQubeEnv(credentialsId: 'jenkins-sonarqube-token') {
+            withSonarQubeEnv(credentialsId: 'Jenkins-SonarQube-token') {
                 sh "mvn org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=accounting-app -Dsonar.projectName='Mini Accounting App'"
             }
         }
