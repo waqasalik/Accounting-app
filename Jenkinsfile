@@ -92,5 +92,19 @@ pipeline {
                 }
             }
         }
+
+        stage("Trigger GitOps Pipeline") {
+            steps {
+                script {
+                    echo "Triggering downstream CD pipeline for IMAGE_TAG: ${IMAGE_TAG}"
+                    sh """
+                        curl -v -u clouduser:gitops-token -X POST \
+                        -H "Content-Type: application/x-www-form-urlencoded" \
+                        --data "IMAGE_TAG=${IMAGE_TAG}" \
+                        "http://ec2-18-60-184-212.ap-south-2.compute.amazonaws.com:8080/job/gitops-register-app-cd/buildWithParameters"
+                    """
+                }
+            }
+        }
     }
 }
