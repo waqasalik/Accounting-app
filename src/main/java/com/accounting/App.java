@@ -4,6 +4,7 @@ import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpServer;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
@@ -24,11 +25,37 @@ public class App {
     /** Starts the server. Pass 0 to pick any free port (used by tests). */
     public HttpServer start(int port) throws IOException {
         HttpServer server = HttpServer.create(new InetSocketAddress(port), 0);
+        
+        // Route for the web interface
+        server.createContext("/", this::handleIndex);
+        
+        // API Routes
         server.createContext("/health", ex -> send(ex, 200, "{\"status\":\"ok\"}"));
         server.createContext("/summary", ex -> send(ex, 200, ledger.summary().toJson()));
         server.createContext("/transactions", this::handleTransactions);
+        
         server.start();
         return server;
+    }
+
+    private void handleIndex(HttpExchange ex) throws IOException {
+        if (!ex.getRequestMethod().equals("GET")) {
+            send(ex, 405, error("method not allowed"));
+            return;
+        }
+        
+        try (InputStream is = App.class.getResourceAsStream("/static/index.html")) {
+            if (is == null) {
+                send(ex, 404, error("index.html not found"));
+            } else {
+                byte[] response = is.readAllBytes();
+                ex.getResponseHeaders().set("Content-Type", "text/html; charset=UTF-8");
+                ex.sendResponseHeaders(200, response.length);
+                try (OutputStream os = ex.getResponseBody()) {
+                    os.write(response);
+                }
+            }
+        }
     }
 
     private void handleTransactions(HttpExchange ex) throws IOException {
