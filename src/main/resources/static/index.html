@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mini Accounting App</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f7f6;
+            color: #333;
+            text-align: center;
+            margin: 0;
+            padding: 50px;
+        }
+        .container {
+            background: white;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #2c3e50;
+        }
+        .success-banner {
+            background-color: #d4edda;
+            color: #155724;
+            padding: 15px;
+            border-radius: 5px;
+            font-weight: bold;
+            margin-bottom: 30px;
+        }
+        .links {
+            margin-top: 30px;
+        }
+        .btn {
+            display: inline-block;
+            background-color: #3498db;
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 5px;
+            margin: 5px;
+            font-weight: bold;
+        }
+        .btn:hover {
+            background-color: #2980b9;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Mini Accounting App</h1>
+        <div class="success-banner">
+            🎉 If you're seeing this, you've successfully deployed your app!
+        </div>
+        
+        <p>Your Spring Boot application is running inside an EKS cluster and is being exposed to the internet via an AWS Load Balancer.</p>
+        
+        <div class="links">
+            <h3>Test the API Endpoints:</h3>
+            <a href="/health" class="btn" target="_blank">Check Health</a>
+            <a href="/summary" class="btn" target="_blank">View Summary</a>
+            <a href="/transactions" class="btn" target="_blank">View Transactions</a>
+        </div>
+    </div>
+</body>
+</html>
