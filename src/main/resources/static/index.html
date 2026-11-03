@@ -48,6 +48,13 @@
         .btn:hover {
             background-color: #2980b9;
         }
+        .version-tag {
+            margin-top: 40px;
+            font-size: 14px;
+            color: #7f8c8d;
+            border-top: 1px solid #eee;
+            padding-top: 20px;
+        }
     </style>
 </head>
 <body>
@@ -56,14 +63,19 @@
         <div class="success-banner">
             🎉 If you're seeing this, you've successfully deployed your app!
         </div>
-        
-        <p>Your Spring Boot application is running inside an EKS cluster and is being exposed to the internet via an AWS Load Balancer.</p>
-        
+
+        <p>Your Java application is running inside an EKS cluster and is exposed via an AWS Load Balancer.</p>
+
         <div class="links">
             <h3>Test the API Endpoints:</h3>
             <a href="/health" class="btn" target="_blank">Check Health</a>
             <a href="/summary" class="btn" target="_blank">View Summary</a>
             <a href="/transactions" class="btn" target="_blank">View Transactions</a>
+        </div>
+        
+        <!-- NEW CHANGE HERE -->
+        <div class="version-tag">
+            <strong>Version 2.0</strong> - Webhook Trigger Test
         </div>
     </div>
 </body>
